@@ -1,0 +1,51 @@
+when you want to save data on the front-end i.e., on the browser,
+client ------ cookie
+
+create--------------------
+res.cookie("name",value);
+
+cookie reading------------------
+req.cookies.name
+
+cookie delete
+res.clearCookie("name")
+
+------------------------------------------------------------------------------------------
+when you want to save data on the server,
+server ------ session
+
+session------------------
+// session-creation--------------------
+app.use(expressSession({
+  resave: false,
+  saveUninitialized: false,
+  secret: "jai jagannath"
+}));
+
+create---
+req.session.anyname = anyvalue;
+
+read---
+req.session.anyname
+
+delete----
+req.session.destroy
+
+
+check from 1:26 hrs Backend - The EndGame (Part-1) | Mastering Advanced Concepts | Backend (Node JS) Series
+for session create, read, delete
+
+check from 1:30 hrs Backend - The EndGame (Part-1) | Mastering Advanced Concepts | Backend (Node JS) Series
+for cookie create, read, delete
+
+
+in regEx-----
+
+^ - must start with
+$ - must end with
+
+^hello$ - should start and end with hello
+
+for authorization and authentication------------
+install ---
+npm i passport passport-local passport-local-mongoose express-session

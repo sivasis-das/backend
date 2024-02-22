@@ -1,6 +1,10 @@
 var express = require("express");
 var router = express.Router();
 const userModel = require("./users");
+const localStrategy = require("passport-local");
+const passport = require("passport");
+
+passport.use(new localStrategy(userModel.authenticate()));
 
 /* GET home page. */
 router.get("/", function (req, res) {
@@ -42,10 +46,61 @@ router.get("/find", async (req, res) => {
 });
 
 router.get("/find", async (req, res) => {
-  let date1= new Date('2023-10-02')
-  let date2= new Date('2023-10-03')
-  let user = await userModel.find({ datecreated: { $gte: date1 , $lte: date2 } });
+  let date1 = new Date("2023-10-02");
+  let date2 = new Date("2023-10-03");
+  let user = await userModel.find({
+    datecreated: { $gte: date1, $lte: date2 },
+  });
   res.send(user);
 });
+
+router.get("/profile",isLoggedIn,(req, res)=>{
+  res.render("profile")
+})
+
+// for registering user-------------------
+router.post("/register", (req, res) => {
+  let userdata = new userModel({
+    username: req.body.username,
+    secret: req.body.secret,
+  });
+
+  userModel
+    .register(userdata, req.body.password)
+    .then(function (registereduser) {
+      passport.authenticate("local")(req, res, () => {
+        res.redirect("/profile");
+      });
+    });
+});
+
+// for log in------------------------------
+router.post("/login", passport.authenticate("local", {
+  successRedirect: "/profile",
+  failureRedirect: "/" 
+}), (req,res)=>{})
+
+
+// for logout------------------------------
+router.get("/logout", (req,res, next)=>{
+  req.logout(err=>{
+    if (err) {
+      return next(err);
+    }
+    res.redirect("/");
+  })
+})
+
+// isLoggedIn Middleware - ---------------------
+// use it fro protected routes  
+// ex---  router.get("/profile", isLoggedIn, (req,res)=>{
+// res.send("/profile")
+// })
+function isLoggedIn(req, res, next){
+  if(req.isAuthenticated()){
+    return next();
+  }
+  res.redirect("/")
+}
 
 module.exports = router;
